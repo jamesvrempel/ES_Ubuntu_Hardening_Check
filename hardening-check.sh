@@ -165,7 +165,7 @@ if have ufw; then
 
   RULES=$(ufw status 2>/dev/null | awk 'NR>4 && $0!~/\(v6\)/ && NF>0 {print $1}' | sed 's#/.*##' | sort -u)
   EXTRA=""
-  for r in $RULES; do in_list "$r" "$SSH_PORT $ALLOW_PORTS" || EXTRA="$EXTRA $r"; done
+  for r in $(echo $RULES | tr "," " "); do in_list "$r" "$SSH_PORT $ALLOW_PORTS" || EXTRA="$EXTRA $r"; done
   if echo "$UV" | grep -q 'Status: active'; then
     if [ -z "$EXTRA" ]; then pass 5.2 "Allowed: $(echo $RULES)"; else warn 5.2 "Not in allow list:$EXTRA"; fi
   else
@@ -269,7 +269,7 @@ else
 fi
 
 # ---------- 11. SUID / SGID / world-writable ----------
-KNOWN_SUID="sudo su passwd chsh chfn newgrp gpasswd mount umount fusermount fusermount3 pkexec ping
+KNOWN_SUID="sudo sudo.ws sudo-rs su passwd chsh chfn newgrp gpasswd mount umount fusermount fusermount3 pkexec ping
 ssh-keysign dbus-daemon-launch-helper polkit-agent-helper-1 snap-confine unix_chkpwd chage expiry
 crontab ssh-agent at pam_extrausers_chkpwd utempter wall write bsd-write dotlockfile plocate mlocate locate ntfs-3g Xorg.wrap dmcrypt-get-device"
 UNK=""; N=0
